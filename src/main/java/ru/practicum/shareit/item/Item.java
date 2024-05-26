@@ -1,18 +1,19 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.item;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
-
-import java.time.LocalDate;
 
 @Value
 @Builder(toBuilder = true)
 @EqualsAndHashCode
-public class ItemRequest {
+public class Item {
     Long id;
+    User owner;
+    String name;
     String description;
-    User requestor;
-    LocalDate created;
+    Boolean available;
+    ItemRequest request;
 }

@@ -7,7 +7,7 @@ import lombok.Value;
 @Value
 @Builder(toBuilder = true)
 @EqualsAndHashCode
-public class User {
+public class UserDto {
     Long id;
     String email;
     String name;

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.item;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -7,8 +7,9 @@ import lombok.Value;
 @Value
 @Builder(toBuilder = true)
 @EqualsAndHashCode
-public class User {
+public class ItemDto {
     Long id;
-    String email;
     String name;
+    String description;
+    Boolean available;
 }
