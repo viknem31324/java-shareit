@@ -10,6 +10,7 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,7 @@ public class ItemService {
         List<Item> items = itemDao.findAllItemsForUser(owner);
 
         Optional<Item> optionalItem = items.stream()
-                .filter(item -> item.getId() == itemId)
+                .filter(item -> Objects.equals(item.getId(), itemId))
                 .findFirst();
 
         if (optionalItem.isPresent()) {
