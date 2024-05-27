@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
-    private final String HEADER = "X-Sharer-User-Id";
+    private final static String HEADER = "X-Sharer-User-Id";
 
     @Autowired
     public ItemController(ItemService itemService) {
