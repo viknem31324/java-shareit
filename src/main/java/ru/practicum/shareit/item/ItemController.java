@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/items")
 public class ItemController {
-    private final ItemService itemService;
     private static final String HEADER = "X-Sharer-User-Id";
+    private final ItemService itemService;
 
     @Autowired
     public ItemController(ItemService itemService) {
