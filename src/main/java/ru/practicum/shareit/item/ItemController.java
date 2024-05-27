@@ -2,57 +2,32 @@ package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.error.exception.NotEnoughRightsException;
-import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserService;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
-    private final UserService userService;
+    private final String HEADERS_USER_ID = "X-Sharer-User-Id";
 
     @Autowired
-    public ItemController(ItemService itemService, UserService userService) {
+    public ItemController(ItemService itemService) {
         this.itemService = itemService;
-        this.userService = userService;
     }
 
     @PostMapping
-    public Item addItem(@RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Long ownerId) {
-        User owner = userService.findUserById(ownerId);
-        Item item = ItemMapper.toItem(itemDto, owner);
-
-        return itemService.addItem(item);
+    public Item addItem(@RequestBody ItemDto itemDto, @RequestHeader(HEADERS_USER_ID) Long ownerId) {
+        return itemService.addItem(itemDto, ownerId);
     }
 
     @PatchMapping("/{itemId}")
-    public Item updateItem(@PathVariable long itemId, @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Long ownerId) {
-        User owner = userService.findUserById(ownerId);
-        List<Item> items = itemService.findAllItemsForUser(owner);
-
-        Optional<Item> currentItem = items.stream()
-                .filter(item -> item.getId() == itemId)
-                .findFirst();
-
-        ItemDto currentItemDto = ItemDto.builder()
-                .id(itemId)
-                .name(itemDto.getName())
-                .description(itemDto.getDescription())
-                .available(itemDto.getAvailable())
-                .build();
-
-        if (currentItem.isPresent()) {
-            Item item = ItemMapper.toItem(currentItemDto, owner);
-            return itemService.updateItem(item);
-        } else {
-            throw new NotEnoughRightsException("Пользователь не является владельцем вещи!");
-        }
+    public Item updateItem(@PathVariable long itemId,
+                           @RequestBody ItemDto itemDto,
+                           @RequestHeader(HEADERS_USER_ID) Long ownerId) {
+        return itemService.updateItem(itemDto, itemId, ownerId);
     }
 
     @GetMapping("/{itemId}")
@@ -61,13 +36,8 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> findAllItemsDtoForUser(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
-        User owner = userService.findUserById(ownerId);
-        List<Item> items = itemService.findAllItemsForUser(owner);
-
-        return items.stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+    public List<ItemDto> findAllItemsDtoForUser(@RequestHeader(HEADERS_USER_ID) Long ownerId) {
+        return itemService.findAllItemsForUser(ownerId);
     }
 
     @GetMapping("/search")
