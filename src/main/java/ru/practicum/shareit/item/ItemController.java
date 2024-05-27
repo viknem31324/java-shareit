@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/items")
 public class ItemController {
-    private static final String HEADER = "X-Sharer-User-Id";
+    private final static String HEADER = "X-Sharer-User-Id";
     private final ItemService itemService;
 
     @Autowired
