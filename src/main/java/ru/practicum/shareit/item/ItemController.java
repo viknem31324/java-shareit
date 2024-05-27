@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
-    private final String HEADERS_USER_ID = "X-Sharer-User-Id";
+    private final String HEADER = "X-Sharer-User-Id";
 
     @Autowired
     public ItemController(ItemService itemService) {
@@ -19,14 +19,14 @@ public class ItemController {
     }
 
     @PostMapping
-    public Item addItem(@RequestBody ItemDto itemDto, @RequestHeader(HEADERS_USER_ID) Long ownerId) {
+    public Item addItem(@RequestBody ItemDto itemDto, @RequestHeader(HEADER) Long ownerId) {
         return itemService.addItem(itemDto, ownerId);
     }
 
     @PatchMapping("/{itemId}")
     public Item updateItem(@PathVariable long itemId,
                            @RequestBody ItemDto itemDto,
-                           @RequestHeader(HEADERS_USER_ID) Long ownerId) {
+                           @RequestHeader(HEADER) Long ownerId) {
         return itemService.updateItem(itemDto, itemId, ownerId);
     }
 
@@ -36,7 +36,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> findAllItemsDtoForUser(@RequestHeader(HEADERS_USER_ID) Long ownerId) {
+    public List<ItemDto> findAllItemsDtoForUser(@RequestHeader(HEADER) Long ownerId) {
         return itemService.findAllItemsForUser(ownerId);
     }
 
