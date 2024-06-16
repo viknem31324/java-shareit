@@ -18,11 +18,10 @@ public class Item {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "USER_ID")
     private User user;
-    @Column(name="NAME", length=255, nullable=false, unique=true)
+    @Column(name = "NAME", length = 255, nullable = false, unique = true)
     private String name;
-    @Column(name="DESCRIPTION", length=525, nullable=false)
+    @Column(name = "DESCRIPTION", length = 525, nullable = false)
     private String description;
-    @Column(name="AVAILABLE")
+    @Column(name = "AVAILABLE")
     private Boolean available;
-//    ItemRequest request;
 }

@@ -20,7 +20,7 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name="TEXT", length=500, nullable=false)
+    @Column(name = "TEXT", length = 500, nullable = false)
     private String text;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "AUTHOR_ID")
@@ -28,7 +28,7 @@ public class Comment {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ITEM_ID")
     private Item item;
-    @Column(name="CREATED")
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Column(name = "CREATED")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime created;
 }

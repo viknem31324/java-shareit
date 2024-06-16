@@ -16,6 +16,6 @@ public class CommentDto {
     private Long id;
     private String text;
     private String authorName;
-    @JsonFormat(shape=JsonFormat.Shape.STRING)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime created;
 }
