@@ -1,24 +1,38 @@
 package ru.practicum.shareit.item;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.BookingDtoResponse;
 import ru.practicum.shareit.user.User;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemMapper {
-    public static ItemDto toItemDto(Item item) {
-        return ItemDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.getAvailable())
-                .build();
+    public static ItemDto mapToItemDto(Item item) {
+        return new ItemDto(item.getId(), item.getName(), item.getDescription(), item.getAvailable());
     }
 
-    public static Item toItem(ItemDto itemDto, User owner) {
-        return Item.builder()
-                .id(itemDto.getId())
-                .owner(owner)
-                .name(itemDto.getName() != null ? itemDto.getName() : null)
-                .description(itemDto.getDescription() != null ? itemDto.getDescription() : null)
-                .available(itemDto.getAvailable() != null ? itemDto.getAvailable() : null)
-                .build();
+    public static List<ItemDto> mapToItemDto(List<Item> items) {
+        return items.stream()
+                .map(ItemMapper::mapToItemDto)
+                .collect(Collectors.toList());
+    }
+
+    public static ItemDtoBooking mapToItemDtoBooking(Item item, BookingDtoResponse last,
+                                                     BookingDtoResponse next, List<CommentDto> comments) {
+        return new ItemDtoBooking(item.getId(), item.getName(), item.getDescription(),
+                item.getAvailable(), last, next, comments);
+    }
+
+    public static Item mapToNewItem(ItemDto itemDto, User owner) {
+        Item item = new Item();
+        item.setId(itemDto.getId());
+        item.setName(itemDto.getName());
+        item.setDescription(itemDto.getDescription());
+        item.setAvailable(itemDto.getAvailable());
+        item.setUser(owner);
+        return item;
     }
 }

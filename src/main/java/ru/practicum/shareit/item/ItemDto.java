@@ -1,15 +1,14 @@
 package ru.practicum.shareit.item;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.*;
 
-@Value
-@Builder(toBuilder = true)
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode
 public class ItemDto {
-    Long id;
-    String name;
-    String description;
-    Boolean available;
+    private Long id;
+    private String name;
+    private String description;
+    private Boolean available;
 }

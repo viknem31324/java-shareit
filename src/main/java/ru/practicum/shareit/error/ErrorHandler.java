@@ -8,13 +8,25 @@ import ru.practicum.shareit.error.exception.*;
 
 @RestControllerAdvice
 public class ErrorHandler {
-    @ExceptionHandler({ UserNotFoundException.class, ItemNotFoundException.class, NotEnoughRightsException.class })
+    @ExceptionHandler({
+            UserNotFoundException.class,
+            ItemNotFoundException.class,
+            NotEnoughRightsException.class,
+            BookingNotFoundException.class
+    })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ExceptionResponse handleNotFoundException(final RuntimeException e) {
         return new ExceptionResponse(e.getMessage());
     }
 
-    @ExceptionHandler({ ValidationException.class })
+    @ExceptionHandler({
+            ValidationItemException.class,
+            ValidationUserException.class,
+            BookingNotAvailableException.class,
+            ValidationBookingException.class,
+            BookingStateNotFoundException.class,
+            CommentValidationException.class
+    })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResponse handleBadRequestException(final RuntimeException e) {
         return new ExceptionResponse(e.getMessage());

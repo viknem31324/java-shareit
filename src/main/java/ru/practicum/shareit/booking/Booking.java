@@ -1,21 +1,35 @@
 package ru.practicum.shareit.booking;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
 
-import java.time.LocalDate;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
-@Value
-@Builder(toBuilder = true)
+@Entity
+@Table(name = "BOOKINGS", schema = "PUBLIC")
 @EqualsAndHashCode
+@Getter
+@Setter
+@ToString
 public class Booking {
-    Long id;
-    LocalDate start;
-    LocalDate end;
-    Item item;
-    User booker;
-    BookingStatus status;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(name="START_DATE")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime start;
+    @Column(name="END_DATE")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime end;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ITEM_ID")
+    private Item item;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "BOOKER_ID")
+    private User booker;
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status;
 }
