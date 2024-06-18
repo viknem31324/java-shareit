@@ -1,5 +1,7 @@
 package ru.practicum.shareit.user.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.error.exception.UserNotFoundException;
 import ru.practicum.shareit.error.exception.ValidationUserException;
@@ -19,6 +21,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
+    private final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
     public List<UserDto> findAllUsers() {
@@ -28,7 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto findUserById(final long userId) {
         User user = findById(userId);
-
+        log.debug("Найден пользователь: {}", user);
         return UserMapper.mapToUserDto(user);
     }
 
@@ -38,6 +41,7 @@ public class UserServiceImpl implements UserService {
         validationUser(userDto);
         validationUserEmail(userDto);
         User user = repository.save(UserMapper.mapToNewUser(userDto));
+        log.debug("Создан пользователь: {}", user);
         return UserMapper.mapToUserDto(user);
     }
 
@@ -45,7 +49,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(final long userId, final UserDto userDto) {
         UserDto findUser = findUserById(userId);
-
+        log.debug("Найден пользователь: {}", findUser);
         if (userDto.getEmail() != null && !userDto.getEmail().equals(findUser.getEmail())) {
             validationUserEmail(userDto);
         }
@@ -62,7 +66,7 @@ public class UserServiceImpl implements UserService {
         user.setId(userId);
 
         User updatedUser = repository.save(user);
-
+        log.debug("Обновленный пользователь: {}", updatedUser);
         return UserMapper.mapToUserDto(updatedUser);
     }
 
@@ -70,6 +74,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto deleteUser(final long userId) {
         User userFind = UserMapper.mapToNewUser(findUserById(userId));
+        log.debug("Найден пользователь: {}", userFind);
         userFind.setId(userId);
         repository.delete(userFind);
         return UserMapper.mapToUserDto(userFind);

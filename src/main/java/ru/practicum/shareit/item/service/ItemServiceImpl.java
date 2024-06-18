@@ -1,20 +1,22 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.*;
+import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.booking.repository.BookingRepositoryImpl;
 import ru.practicum.shareit.error.exception.*;
+import ru.practicum.shareit.helpers.Constant.BookingStatus;
 import ru.practicum.shareit.item.*;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,14 +27,18 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final UserServiceImpl userService;
     private final CommentRepository commentRepository;
+    private final BookingRepositoryImpl bookingRepositoryImpl;
+    private final Logger log = LoggerFactory.getLogger(ItemServiceImpl.class);
 
     @Transactional
     @Override
     public ItemDto addItem(ItemDto itemDto, Long ownerId) {
         validationItem(itemDto);
         User owner = userService.findById(ownerId);
+        log.debug("Найден пользователь: {}", owner);
         Item item = ItemMapper.mapToNewItem(itemDto, owner);
         Item savedItem = repository.save(item);
+        log.debug("Созданная вещь: {}", item);
 
         return ItemMapper.mapToItemDto(savedItem);
     }
@@ -41,7 +47,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto updateItem(ItemDto itemDto, Long itemId, Long ownerId) {
         Item findItem = findById(itemId);
+        log.debug("Найдена вещь: {}", findItem);
         User owner = userService.findById(ownerId);
+        log.debug("Найден пользователь: {}", owner);
 
         if (!Objects.equals(findItem.getUser().getId(), owner.getId())) {
             throw new NotEnoughRightsException("Пользователь не является владельцем вещи!");
@@ -49,29 +57,46 @@ public class ItemServiceImpl implements ItemService {
 
         Item item = createdValidItem(itemDto, findItem, itemId, owner);
         Item savedItem = repository.save(item);
+        log.debug("Обновленная вещь: {}", savedItem);
         return ItemMapper.mapToItemDto(savedItem);
     }
 
     @Override
     public ItemDtoBooking findItemDtoById(Long itemId, Long ownerId) {
         Item item = findById(itemId);
-
+        log.debug("Найдена вещь: {}", item);
         return getItemDtoBooking(ownerId, item);
     }
 
     @Override
     public List<ItemDtoBooking> findAllItemsForUser(Long ownerId) {
         List<Item> items = repository.findAllByUserId(ownerId);
+        log.debug("Найдены вещи: {}", items);
+        List<Long> ids = items.stream().map(Item::getId).collect(Collectors.toList());
+        Map<Long, List<Comment>> commentMap = commentRepository.findCommentsForItems(ids);
+        List<Booking> lastBookingList = bookingRepositoryImpl
+                .findFirstByItemIdsLastBooking(ids, BookingStatus.APPROVED, LocalDateTime.now());
+        Map<Long, Booking> lastBookingMap = new HashMap<>();
+        for (Booking booking : lastBookingList) {
+            lastBookingMap.put(booking.getItem().getId(), booking);
+        }
+        List<Booking> nextBookingList = bookingRepositoryImpl
+                .findFirstByItemIdsNextBooking(ids, BookingStatus.APPROVED, LocalDateTime.now());
+        Map<Long, Booking> nextBookingMap = new HashMap<>();
+        for (Booking booking : nextBookingList) {
+            nextBookingMap.put(booking.getItem().getId(), booking);
+        }
 
-        return items.stream().map(item -> getItemDtoBooking(ownerId, item))
-                .collect(Collectors.toList());
+        List<ItemDtoBooking> list = ItemMapper.mapToItemsDtosBooking(items, commentMap, lastBookingMap, nextBookingMap);
+        log.debug("Сформирован список вещей: {}", list);
+        return list;
     }
 
     @Override
     public List<ItemDto> searchItems(String text) {
-        List<Item> users = repository.findAllByContainsText(text.toLowerCase());
-
-        return ItemMapper.mapToItemDto(users);
+        List<Item> items = repository.findAllByContainsText(text.toLowerCase());
+        log.debug("Найденные вещи: {}", items);
+        return ItemMapper.mapToItemDto(items);
     }
 
     @Transactional
@@ -94,7 +119,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public CommentDto addComment(CommentDtoRequest commentDtoRequest, Long itemId, Long authorId) {
         Item findItem = findById(itemId);
+        log.debug("Найдена вещь: {}", findItem);
         User author = userService.findById(authorId);
+        log.debug("Найден пользователь: {}", author);
         List<Booking> booking = bookingRepository.findBookingByIdUserAndIdItem(authorId, itemId);
 
         if (commentDtoRequest.getText().isBlank()) {
@@ -107,7 +134,7 @@ public class ItemServiceImpl implements ItemService {
 
         Comment comment = CommentMapper.mapToNewComment(commentDtoRequest, findItem, author);
         Comment saveComment = commentRepository.save(comment);
-
+        log.debug("Созданный комментарий: {}", saveComment);
         return CommentMapper.mapToCommentDto(saveComment);
     }
 

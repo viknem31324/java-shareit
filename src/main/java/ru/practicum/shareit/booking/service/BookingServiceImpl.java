@@ -1,11 +1,16 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.*;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.error.exception.*;
+import ru.practicum.shareit.helpers.Constant.BookingStatus;
+import ru.practicum.shareit.helpers.Constant.BookingState;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.user.User;
@@ -23,13 +28,16 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository repository;
     private final UserServiceImpl userService;
     private final ItemServiceImpl itemService;
+    private final Logger log = LoggerFactory.getLogger(BookingServiceImpl.class);
 
     @Transactional
     @Override
     public Booking addNewBookingRequest(BookingDto bookingDto, long bookerId) {
         validationBooking(bookingDto);
         User booker = userService.findById(bookerId);
+        log.debug("Найден пользователь: {}", booker);
         Item item = itemService.findById(bookingDto.getItemId());
+        log.debug("Найдена вещь: {}", item);
 
         if (item.getUser().getId() == bookerId) {
             throw new ItemNotFoundException("Нельзя взять вещь в аренду у самого себя!");
@@ -52,18 +60,22 @@ public class BookingServiceImpl implements BookingService {
         if (!item.getAvailable()) {
             throw new BookingNotAvailableException("Вещь недоступна для аренды!");
         }
-
-        return repository.save(booking);
+        Booking savedBooking = repository.save(booking);
+        log.debug("Создано бронирование: {}", savedBooking);
+        return savedBooking;
     }
 
     @Transactional
     @Override
     public Booking approvedBooking(long ownerId, long bookingId, boolean approved) {
-        userService.findById(ownerId);
+        User user = userService.findById(ownerId);
+        log.debug("Найден пользователь: {}", user);
         Booking booking = findBooking(bookingId);
+        log.debug("Найдено бронирование: {}", booking);
 
         long itemId = booking.getItem().getId();
         Item item = itemService.findById(itemId);
+        log.debug("Найдена вещь: {}", item);
 
         if (item.getUser().getId() == ownerId) {
             if (booking.getStatus() == BookingStatus.APPROVED) {
@@ -79,7 +91,9 @@ public class BookingServiceImpl implements BookingService {
                 booking.setStatus(BookingStatus.REJECTED);
             }
 
-            return repository.save(booking);
+            Booking updatededBooking = repository.save(booking);
+            log.debug("Обновленная бронь: {}", updatededBooking);
+            return updatededBooking;
         } else {
             throw new NotEnoughRightsException("Пользователь не является владельцем вещи!");
         }
@@ -88,8 +102,11 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking getBookingInformation(long userId, long bookingId) {
         Booking booking = findBooking(bookingId);
+        log.debug("Найдено бронирование: {}", booking);
         User booker = booking.getBooker();
+        log.debug("Найден пользователь: {}", booker);
         User owner = booking.getItem().getUser();
+        log.debug("Найден владелец: {}", owner);
 
         if (owner.getId() != userId && booker.getId() != userId) {
             throw new NotEnoughRightsException("Недостаточно прав для просмотра!");
@@ -102,7 +119,8 @@ public class BookingServiceImpl implements BookingService {
     public List<Booking> getBookingListForCurrentUser(long userId, String state) {
         validationStatusBooking(state);
 
-        userService.findById(userId);
+        User user = userService.findById(userId);
+        log.debug("Найден пользователь: {}", user);
 
         switch (BookingState.valueOf(state)) {
             case ALL:
@@ -126,7 +144,8 @@ public class BookingServiceImpl implements BookingService {
     public List<Booking> getBookingListForOwner(long userId, String state) {
         validationStatusBooking(state);
 
-        userService.findById(userId);
+        User user = userService.findById(userId);
+        log.debug("Найден пользователь: {}", user);
 
         switch (BookingState.valueOf(state)) {
             case ALL:

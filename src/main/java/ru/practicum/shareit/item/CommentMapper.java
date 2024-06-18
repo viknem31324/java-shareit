@@ -1,16 +1,15 @@
 package ru.practicum.shareit.item;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public class CommentMapper {
-    public static CommentDto mapToCommentDto(Comment comment) {
+    public CommentDto mapToCommentDto(Comment comment) {
         return new CommentDto(
                 comment.getId(),
                 comment.getText(),
@@ -19,13 +18,13 @@ public class CommentMapper {
         );
     }
 
-    public static List<CommentDto> mapToCommentDto(List<Comment> comments) {
+    public List<CommentDto> mapToCommentDto(List<Comment> comments) {
         return comments.stream()
                 .map(CommentMapper::mapToCommentDto)
                 .collect(Collectors.toList());
     }
 
-    public static Comment mapToNewComment(CommentDtoRequest commentDtoRequest, Item item, User author) {
+    public Comment mapToNewComment(CommentDtoRequest commentDtoRequest, Item item, User author) {
         Comment comment = new Comment();
         comment.setText(commentDtoRequest.getText());
         comment.setItem(item);
