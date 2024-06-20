@@ -1,42 +1,44 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.helpers.Constant;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/items")
 public class ItemController {
-    private static final String HEADER = "X-Sharer-User-Id";
     private final ItemService itemService;
-
-    @Autowired
-    public ItemController(ItemService itemService) {
-        this.itemService = itemService;
-    }
+    private final Logger log = LoggerFactory.getLogger(ItemController.class);
 
     @PostMapping
-    public Item addItem(@RequestBody ItemDto itemDto, @RequestHeader(HEADER) Long ownerId) {
+    public ItemDto addItem(@RequestBody ItemDto itemDto, @RequestHeader(name = Constant.HEADER) Long ownerId) {
+        log.info("Получен запрос на создание новой вещи. Вещь: {}, владелец: {}", itemDto, ownerId);
         return itemService.addItem(itemDto, ownerId);
     }
 
     @PatchMapping("/{itemId}")
-    public Item updateItem(@PathVariable long itemId,
-                           @RequestBody ItemDto itemDto,
-                           @RequestHeader(HEADER) Long ownerId) {
+    public ItemDto updateItem(@PathVariable long itemId, @RequestBody ItemDto itemDto,
+                              @RequestHeader(name = Constant.HEADER) Long ownerId) {
+        log.info("Получен запрос на обновление вещи. Вещь: {}, владелец: {}", itemDto, ownerId);
         return itemService.updateItem(itemDto, itemId, ownerId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto findItemById(@PathVariable long itemId) {
-        return ItemMapper.toItemDto(itemService.findItemById(itemId));
+    public ItemDtoBooking findItemById(@PathVariable long itemId, @RequestHeader(name = Constant.HEADER) Long userId) {
+        log.info("Получен запрос на поиск вещи по id. Вещь: {}, пользователь: {}", itemId, userId);
+        return itemService.findItemDtoById(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto> findAllItemsDtoForUser(@RequestHeader(HEADER) Long ownerId) {
+    public List<ItemDtoBooking> findAllItemsDtoForUser(@RequestHeader(name = Constant.HEADER) Long ownerId) {
+        log.info("Получен запрос на поиск вещей пользователя с id: {}", ownerId);
         return itemService.findAllItemsForUser(ownerId);
     }
 
@@ -45,10 +47,15 @@ public class ItemController {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        List<Item> items = itemService.searchItems(text);
+        log.info("Получен запрос на поиск вещей по переданному тексту: {}", text);
+        return itemService.searchItems(text);
+    }
 
-        return items.stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@PathVariable long itemId, @RequestBody CommentDtoRequest commentDtoRequest,
+                                 @RequestHeader(name = Constant.HEADER) Long ownerId) {
+        log.info("Получен запрос на создание комментария для вещи с id: {}, комментарий: {}, id комментатора: ",
+                itemId, commentDtoRequest);
+        return itemService.addComment(commentDtoRequest, itemId, ownerId);
     }
 }
