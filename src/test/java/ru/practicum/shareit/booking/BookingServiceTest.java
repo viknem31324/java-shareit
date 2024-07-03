@@ -247,7 +247,7 @@ public class BookingServiceTest {
         when(bookingRepository.findAllBookingById(anyLong(), any()))
                 .thenReturn(List.of(booking));
 
-        List<Booking> bookings = bookingService.getBookingListForCurrentUser(1l,
+        List<Booking> bookings = bookingService.getBookingListForCurrentUser(1L,
                 Constant.BookingState.ALL.toString(), 0, 10);
 
         assertBooking(booking, bookings.get(0));
@@ -263,7 +263,7 @@ public class BookingServiceTest {
         when(bookingRepository.findAllBookingByIdAndStatus(anyLong(), any(), any()))
                 .thenReturn(List.of(booking));
 
-        List<Booking> bookings = bookingService.getBookingListForCurrentUser(1l,
+        List<Booking> bookings = bookingService.getBookingListForCurrentUser(1L,
                 Constant.BookingState.WAITING.toString(), 0, 10);
 
         assertBooking(booking, bookings.get(0));
@@ -279,7 +279,7 @@ public class BookingServiceTest {
         when(bookingRepository.findAllBookingByIdAndStatus(anyLong(), any(), any()))
                 .thenReturn(List.of(booking));
 
-        List<Booking> bookings = bookingService.getBookingListForCurrentUser(1l,
+        List<Booking> bookings = bookingService.getBookingListForCurrentUser(1L,
                 Constant.BookingState.REJECTED.toString(), 0, 10);
 
         assertBooking(booking, bookings.get(0));
@@ -295,7 +295,7 @@ public class BookingServiceTest {
         when(bookingRepository.findAllPastBookingById(anyLong(), any()))
                 .thenReturn(List.of(booking));
 
-        List<Booking> bookings = bookingService.getBookingListForCurrentUser(1l,
+        List<Booking> bookings = bookingService.getBookingListForCurrentUser(1L,
                 Constant.BookingState.PAST.toString(), 0, 10);
 
         assertBooking(booking, bookings.get(0));
@@ -311,7 +311,7 @@ public class BookingServiceTest {
         when(bookingRepository.findAllFutureBookingById(anyLong(), any()))
                 .thenReturn(List.of(booking));
 
-        List<Booking> bookings = bookingService.getBookingListForCurrentUser(1l,
+        List<Booking> bookings = bookingService.getBookingListForCurrentUser(1L,
                 Constant.BookingState.FUTURE.toString(), 0, 10);
 
         assertBooking(booking, bookings.get(0));
@@ -327,7 +327,7 @@ public class BookingServiceTest {
         when(bookingRepository.findAllCurrentBookingById(anyLong(), any()))
                 .thenReturn(List.of(booking));
 
-        List<Booking> bookings = bookingService.getBookingListForCurrentUser(1l,
+        List<Booking> bookings = bookingService.getBookingListForCurrentUser(1L,
                 Constant.BookingState.CURRENT.toString(), 0, 10);
 
         assertBooking(booking, bookings.get(0));
@@ -341,7 +341,7 @@ public class BookingServiceTest {
         when(bookingRepository.findAllBookingOwnerById(anyLong(), any()))
                 .thenReturn(List.of(booking));
 
-        List<Booking> bookings = bookingService.getBookingListForOwner(1l,
+        List<Booking> bookings = bookingService.getBookingListForOwner(1L,
                 Constant.BookingState.ALL.toString(), 0, 10);
 
         assertBooking(booking, bookings.get(0));
@@ -357,7 +357,7 @@ public class BookingServiceTest {
         when(bookingRepository.findAllBookingOwnerByIdAndStatus(anyLong(), any(), any()))
                 .thenReturn(List.of(booking));
 
-        List<Booking> bookings = bookingService.getBookingListForOwner(1l,
+        List<Booking> bookings = bookingService.getBookingListForOwner(1L,
                 Constant.BookingState.WAITING.toString(), 0, 10);
 
         assertBooking(booking, bookings.get(0));
@@ -373,7 +373,7 @@ public class BookingServiceTest {
         when(bookingRepository.findAllBookingOwnerByIdAndStatus(anyLong(), any(), any()))
                 .thenReturn(List.of(booking));
 
-        List<Booking> bookings = bookingService.getBookingListForOwner(1l,
+        List<Booking> bookings = bookingService.getBookingListForOwner(1L,
                 Constant.BookingState.REJECTED.toString(), 0, 10);
 
         assertBooking(booking, bookings.get(0));
@@ -389,7 +389,7 @@ public class BookingServiceTest {
         when(bookingRepository.findAllPastOwnerBookingById(anyLong(), any()))
                 .thenReturn(List.of(booking));
 
-        List<Booking> bookings = bookingService.getBookingListForOwner(1l,
+        List<Booking> bookings = bookingService.getBookingListForOwner(1L,
                 Constant.BookingState.PAST.toString(), 0, 10);
 
         assertBooking(booking, bookings.get(0));
@@ -405,7 +405,7 @@ public class BookingServiceTest {
         when(bookingRepository.findAllFutureOwnerBookingById(anyLong(), any()))
                 .thenReturn(List.of(booking));
 
-        List<Booking> bookings = bookingService.getBookingListForOwner(1l,
+        List<Booking> bookings = bookingService.getBookingListForOwner(1L,
                 Constant.BookingState.FUTURE.toString(), 0, 10);
 
         assertBooking(booking, bookings.get(0));
@@ -421,7 +421,7 @@ public class BookingServiceTest {
         when(bookingRepository.findAllCurrentOwnerBookingById(anyLong(), any()))
                 .thenReturn(List.of(booking));
 
-        List<Booking> bookings = bookingService.getBookingListForOwner(1l,
+        List<Booking> bookings = bookingService.getBookingListForOwner(1L,
                 Constant.BookingState.CURRENT.toString(), 0, 10);
 
         assertBooking(booking, bookings.get(0));
