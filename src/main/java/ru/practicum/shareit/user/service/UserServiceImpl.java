@@ -83,11 +83,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(final long userId) {
         Optional<User> userOpt = repository.findById(userId);
+        log.debug("Найден пользователь: {}", userOpt);
 
         if (userOpt.isEmpty()) {
-            throw new UserNotFoundException("Пользовательс с id " + userId + " не найден!");
+            log.debug("Пользователь с id {} не найден", userId);
+            throw new UserNotFoundException("Пользователь с id " + userId + " не найден!");
         }
-
+        log.debug("Найден пользователь: {}", userOpt.get());
         return userOpt.get();
     }
 
@@ -101,7 +103,7 @@ public class UserServiceImpl implements UserService {
         final String REGEX_EMAIL_PATTERN = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
 
         if (!patternMatches(user.getEmail(), REGEX_EMAIL_PATTERN)) {
-            throw new ValidationUserException("Некорректые email пользователя!");
+            throw new ValidationUserException("Некорректый email пользователя!");
         }
     }
 

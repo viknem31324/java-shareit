@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.*;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
@@ -24,4 +25,7 @@ public class Item {
     private String description;
     @Column(name = "AVAILABLE")
     private Boolean available;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "REQUEST_ID")
+    private ItemRequest request;
 }

@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingDtoResponse;
 import ru.practicum.shareit.booking.BookingMapper;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
 import java.util.List;
@@ -13,7 +14,15 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class ItemMapper {
     public ItemDto mapToItemDto(Item item) {
-        return new ItemDto(item.getId(), item.getName(), item.getDescription(), item.getAvailable());
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(item.getId());
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.getAvailable());
+        if (item.getRequest() != null) {
+            itemDto.setRequestId(item.getRequest().getId());
+        }
+        return itemDto;
     }
 
     public List<ItemDto> mapToItemDto(List<Item> items) {
@@ -57,13 +66,16 @@ public class ItemMapper {
         }).collect(Collectors.toList());
     }
 
-    public Item mapToNewItem(ItemDto itemDto, User owner) {
+    public Item mapToNewItem(ItemDto itemDto, User owner, ItemRequest itemRequest) {
         Item item = new Item();
         item.setId(itemDto.getId());
         item.setName(itemDto.getName());
         item.setDescription(itemDto.getDescription());
         item.setAvailable(itemDto.getAvailable());
         item.setUser(owner);
+        if (itemRequest != null) {
+            item.setRequest(itemRequest);
+        }
         return item;
     }
 }

@@ -12,6 +12,8 @@ import ru.practicum.shareit.booking.repository.BookingRepositoryImpl;
 import ru.practicum.shareit.error.exception.*;
 import ru.practicum.shareit.helpers.Constant.BookingStatus;
 import ru.practicum.shareit.item.*;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
@@ -28,6 +30,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserServiceImpl userService;
     private final CommentRepository commentRepository;
     private final BookingRepositoryImpl bookingRepositoryImpl;
+    private final ItemRequestService itemRequestService;
     private final Logger log = LoggerFactory.getLogger(ItemServiceImpl.class);
 
     @Transactional
@@ -36,7 +39,11 @@ public class ItemServiceImpl implements ItemService {
         validationItem(itemDto);
         User owner = userService.findById(ownerId);
         log.debug("Найден пользователь: {}", owner);
-        Item item = ItemMapper.mapToNewItem(itemDto, owner);
+        ItemRequest itemRequest = null;
+        if (itemDto.getRequestId() != null) {
+            itemRequest = itemRequestService.getItemRequestById(itemDto.getRequestId());
+        }
+        Item item = ItemMapper.mapToNewItem(itemDto, owner, itemRequest);
         Item savedItem = repository.save(item);
         log.debug("Созданная вещь: {}", item);
 
@@ -69,8 +76,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoBooking> findAllItemsForUser(Long ownerId) {
-        List<Item> items = repository.findAllByUserId(ownerId);
+    public List<ItemDtoBooking> findAllItemsForUser(Long ownerId, int from, int size) {
+        int start = from > 0 ? from / size : 0;
+        List<Item> items = repository.findAllByUserId(ownerId, PageRequest.of(start, size));
         log.debug("Найдены вещи: {}", items);
         List<Long> ids = items.stream().map(Item::getId).collect(Collectors.toList());
         Map<Long, List<Comment>> commentMap = commentRepository.findCommentsForItems(ids);
@@ -93,8 +101,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItems(String text) {
-        List<Item> items = repository.findAllByContainsText(text.toLowerCase());
+    public List<ItemDto> searchItems(String text, int from, int size) {
+        int start = from > 0 ? from / size : 0;
+        List<Item> items = repository.findAllByContainsText(text.toLowerCase(), PageRequest.of(start, size));
         log.debug("Найденные вещи: {}", items);
         return ItemMapper.mapToItemDto(items);
     }

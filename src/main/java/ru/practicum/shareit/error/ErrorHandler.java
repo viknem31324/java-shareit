@@ -12,7 +12,8 @@ public class ErrorHandler {
             UserNotFoundException.class,
             ItemNotFoundException.class,
             NotEnoughRightsException.class,
-            BookingNotFoundException.class
+            BookingNotFoundException.class,
+            ItemRequestNotFoundException.class
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ExceptionResponse handleNotFoundException(final RuntimeException e) {
@@ -25,7 +26,8 @@ public class ErrorHandler {
             BookingNotAvailableException.class,
             ValidationBookingException.class,
             BookingStateNotFoundException.class,
-            CommentValidationException.class
+            CommentValidationException.class,
+            ItemRequestValidationException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResponse handleBadRequestException(final RuntimeException e) {

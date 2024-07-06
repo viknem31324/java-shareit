@@ -116,53 +116,59 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getBookingListForCurrentUser(long userId, String state) {
+    public List<Booking> getBookingListForCurrentUser(long userId, String state, int from, int size) {
         validationStatusBooking(state);
 
         User user = userService.findById(userId);
         log.debug("Найден пользователь: {}", user);
+        int start = from > 0 ? from / size : 0;
 
         switch (BookingState.valueOf(state)) {
             case ALL:
-                return repository.findAllBookingById(userId);
+                return repository.findAllBookingById(userId, PageRequest.of(start, size));
             case WAITING:
-                return repository.findAllBookingByIdAndStatus(userId, BookingStatus.WAITING);
+                return repository.findAllBookingByIdAndStatus(userId, BookingStatus.WAITING,
+                        PageRequest.of(start, size));
             case REJECTED:
-                return repository.findAllBookingByIdAndStatus(userId, BookingStatus.REJECTED);
+                return repository.findAllBookingByIdAndStatus(userId, BookingStatus.REJECTED,
+                        PageRequest.of(start, size));
             case PAST:
-                return repository.findAllPastBookingById(userId);
+                return repository.findAllPastBookingById(userId, PageRequest.of(start, size));
             case FUTURE:
-                return repository.findAllFutureBookingById(userId);
+                return repository.findAllFutureBookingById(userId, PageRequest.of(start, size));
             case CURRENT:
-                return repository.findAllCurrentBookingById(userId);
+                return repository.findAllCurrentBookingById(userId, PageRequest.of(start, size));
         }
 
-        return repository.findAllBookingById(userId);
+        return repository.findAllBookingById(userId, PageRequest.of(start, size));
     }
 
     @Override
-    public List<Booking> getBookingListForOwner(long userId, String state) {
+    public List<Booking> getBookingListForOwner(long userId, String state, int from, int size) {
         validationStatusBooking(state);
 
         User user = userService.findById(userId);
         log.debug("Найден пользователь: {}", user);
+        int start = from > 0 ? from / size : 0;
 
         switch (BookingState.valueOf(state)) {
             case ALL:
-                return repository.findAllBookingOwnerById(userId);
+                return repository.findAllBookingOwnerById(userId, PageRequest.of(start, size));
             case WAITING:
-                return repository.findAllBookingOwnerByIdAndStatus(userId, BookingStatus.WAITING);
+                return repository.findAllBookingOwnerByIdAndStatus(userId, BookingStatus.WAITING,
+                        PageRequest.of(start, size));
             case REJECTED:
-                return repository.findAllBookingOwnerByIdAndStatus(userId, BookingStatus.REJECTED);
+                return repository.findAllBookingOwnerByIdAndStatus(userId, BookingStatus.REJECTED,
+                        PageRequest.of(start, size));
             case PAST:
-                return repository.findAllPastOwnerBookingById(userId);
+                return repository.findAllPastOwnerBookingById(userId, PageRequest.of(start, size));
             case FUTURE:
-                return repository.findAllFutureOwnerBookingById(userId);
+                return repository.findAllFutureOwnerBookingById(userId, PageRequest.of(start, size));
             case CURRENT:
-                return repository.findAllCurrentOwnerBookingById(userId);
+                return repository.findAllCurrentOwnerBookingById(userId, PageRequest.of(start, size));
         }
 
-        return repository.findAllBookingOwnerById(userId);
+        return repository.findAllBookingOwnerById(userId, PageRequest.of(start, size));
     }
 
     private Booking findBooking(long bookingId) {
