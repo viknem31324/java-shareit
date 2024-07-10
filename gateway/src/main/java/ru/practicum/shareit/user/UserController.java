@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/users")
+@Validated
 public class UserController {
     private final UserClient userClient;
     private final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -26,7 +28,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<Object> createUser(@RequestBody @Validated UserDto userDto) {
         log.info("Получен запрос на создание пользователя: {}", userDto);
         return userClient.createUser(userDto);
     }

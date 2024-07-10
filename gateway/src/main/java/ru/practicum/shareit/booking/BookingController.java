@@ -6,11 +6,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exception.ValidationBookingException;
 import ru.practicum.shareit.helpers.Constant;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,8 +22,14 @@ public class BookingController {
     private final Logger log = LoggerFactory.getLogger(BookingController.class);
 
     @PostMapping
-    public ResponseEntity<Object> addNewBookingRequest(@RequestBody @Valid BookingDto bookingDto,
+    public ResponseEntity<Object> addNewBookingRequest(@RequestBody @Validated BookingDto bookingDto,
                                                        @RequestHeader(name = Constant.HEADER) long bookerId) {
+        if (bookingDto.getEnd().isBefore(bookingDto.getStart()) ||
+                bookingDto.getStart().isAfter(bookingDto.getEnd()) ||
+                bookingDto.getEnd().equals(bookingDto.getStart()) ||
+                bookingDto.getStart().isBefore(LocalDateTime.now())) {
+            throw new ValidationBookingException("Ошибка в датах бронирования!");
+        }
         log.info("Получен запрос на создание нового бронирования: {} для пользователя: {}", bookingDto, bookerId);
         return bookingClient.addNewBookingRequest(bookingDto, bookerId);
     }

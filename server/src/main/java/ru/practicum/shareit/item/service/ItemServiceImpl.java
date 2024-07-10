@@ -133,13 +133,13 @@ public class ItemServiceImpl implements ItemService {
         log.debug("Найден пользователь: {}", author);
         List<Booking> booking = bookingRepository.findBookingByIdUserAndIdItem(authorId, itemId);
 
-        if (commentDtoRequest.getText().isBlank()) {
-            throw new CommentValidationException("Текст отзыва не может быть пустым!");
-        }
-
-        if (booking.isEmpty()) {
-            throw new CommentValidationException("Оставить отзыв может только тот кто брал ее в аренду!");
-        }
+//        if (commentDtoRequest.getText().isBlank()) {
+//            throw new CommentValidationException("Текст отзыва не может быть пустым!");
+//        }
+//
+//        if (booking.isEmpty()) {
+//            throw new CommentValidationException("Оставить отзыв может только тот кто брал ее в аренду!");
+//        }
 
         Comment comment = CommentMapper.mapToNewComment(commentDtoRequest, findItem, author);
         Comment saveComment = commentRepository.save(comment);

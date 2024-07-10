@@ -62,6 +62,10 @@ public class ItemMapper {
                     commentDtoList = CommentMapper.mapToCommentDto(commentList);
                 }
             }
+
+            if (last == null && next == null) {
+                item.setAvailable(true);
+            }
             return mapToItemDtoBooking(item, last, next, commentDtoList);
         }).collect(Collectors.toList());
     }
