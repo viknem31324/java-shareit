@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long>  {
-    @Query("SELECT i FROM Item i WHERE i.user.id = :userId")
+    @Query("SELECT i FROM Item i WHERE i.user.id = :userId ORDER BY i.id ASC")
     List<Item> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 
     @Query("SELECT i FROM Item i WHERE (LOWER(i.name) " +

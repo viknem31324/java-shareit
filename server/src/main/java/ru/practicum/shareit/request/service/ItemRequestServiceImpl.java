@@ -29,7 +29,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional
     @Override
     public ItemRequestDto createNewItemRequest(Long requestorId, ItemRequestDto itemRequestDto) {
-//        itemRequestValidation(itemRequestDto);
         User requestor = userService.findById(requestorId);
         log.debug("Найден пользователь: {}", requestor);
         ItemRequest itemRequest = ItemRequesMapper.mapToNewItemRequest(itemRequestDto, requestor);
@@ -82,12 +81,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         log.debug("По id {} найден запрос на вещь: {}", requestId, itemRequest);
         return itemRequest;
     }
-
-//    private void itemRequestValidation(ItemRequestDto itemRequestDto) {
-//        if (itemRequestDto.getDescription() == null || itemRequestDto.getDescription().isEmpty()) {
-//            throw new ItemRequestValidationException("Некорректные данные!");
-//        }
-//    }
 
     private Map<Long, List<Item>> getItemsMap(List<ItemRequest> itemRequests) {
         List<Long> ids = itemRequests.stream().map(ItemRequest::getId).collect(Collectors.toList());

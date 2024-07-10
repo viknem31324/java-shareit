@@ -36,8 +36,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto createUser(final UserDto userDto) {
-//        validationUser(userDto);
-//        validationUserEmail(userDto);
         User user = repository.save(UserMapper.mapToNewUser(userDto));
         log.debug("Создан пользователь: {}", user);
         return UserMapper.mapToUserDto(user);
@@ -48,9 +46,6 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(final long userId, final UserDto userDto) {
         UserDto findUser = findUserById(userId);
         log.debug("Найден пользователь: {}", findUser);
-//        if (userDto.getEmail() != null && !userDto.getEmail().equals(findUser.getEmail())) {
-//            validationUserEmail(userDto);
-//        }
 
         if (userDto.getEmail() == null) {
             userDto.setEmail(findUser.getEmail());
@@ -90,24 +85,4 @@ public class UserServiceImpl implements UserService {
         log.debug("Найден пользователь: {}", userOpt.get());
         return userOpt.get();
     }
-
-//    private void validationUser(final UserDto user) {
-//        if (user.getEmail() == null || user.getName() == null) {
-//            throw new ValidationUserException("Некорректые данные пользователя!");
-//        }
-//    }
-//
-//    private void validationUserEmail(final UserDto user) {
-//        final String REGEX_EMAIL_PATTERN = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
-//
-//        if (!patternMatches(user.getEmail(), REGEX_EMAIL_PATTERN)) {
-//            throw new ValidationUserException("Некорректый email пользователя!");
-//        }
-//    }
-//
-//    private boolean patternMatches(final String emailAddress, final String regexPattern) {
-//        return Pattern.compile(regexPattern)
-//                .matcher(emailAddress)
-//                .matches();
-//    }
 }

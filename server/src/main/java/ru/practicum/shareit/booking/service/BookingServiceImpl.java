@@ -16,7 +16,6 @@ import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +32,6 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public Booking addNewBookingRequest(BookingDto bookingDto, long bookerId) {
-//        validationBooking(bookingDto);
         User booker = userService.findById(bookerId);
         log.debug("Найден пользователь: {}", booker);
         Item item = itemService.findById(bookingDto.getItemId());
@@ -179,21 +177,6 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return booking.get();
-    }
-
-    private void validationBooking(BookingDto booking) {
-        LocalDateTime date = LocalDateTime.now();
-
-        if (booking.getStart() == null || booking.getEnd() == null) {
-            throw new ValidationItemException("Не корректные данные бронирования!");
-        }
-
-        if (booking.getEnd().isBefore(booking.getStart()) ||
-                booking.getStart().isAfter(booking.getEnd()) ||
-                booking.getEnd().equals(booking.getStart()) ||
-                booking.getStart().isBefore(date)) {
-            throw new ValidationItemException("Ошибка в датах бронирования!");
-        }
     }
 
     private void validationStatusBooking(String status) {

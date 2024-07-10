@@ -68,6 +68,7 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.mapToItemDto(savedItem);
     }
 
+    @Transactional
     @Override
     public ItemDtoBooking findItemDtoById(Long itemId, Long ownerId) {
         Item item = findById(itemId);
@@ -79,6 +80,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDtoBooking> findAllItemsForUser(Long ownerId, int from, int size) {
         int start = from > 0 ? from / size : 0;
         List<Item> items = repository.findAllByUserId(ownerId, PageRequest.of(start, size));
+
         log.debug("Найдены вещи: {}", items);
         List<Long> ids = items.stream().map(Item::getId).collect(Collectors.toList());
         Map<Long, List<Comment>> commentMap = commentRepository.findCommentsForItems(ids);
@@ -95,7 +97,8 @@ public class ItemServiceImpl implements ItemService {
             nextBookingMap.put(booking.getItem().getId(), booking);
         }
 
-        List<ItemDtoBooking> list = ItemMapper.mapToItemsDtosBooking(items, commentMap, lastBookingMap, nextBookingMap);
+        List<ItemDtoBooking> list = ItemMapper.mapToItemsDtosBooking(items, commentMap, lastBookingMap,
+                nextBookingMap);
         log.debug("Сформирован список вещей: {}", list);
         return list;
     }
@@ -125,6 +128,7 @@ public class ItemServiceImpl implements ItemService {
         return itemOpt.get();
     }
 
+    @Transactional
     @Override
     public CommentDto addComment(CommentDtoRequest commentDtoRequest, Long itemId, Long authorId) {
         Item findItem = findById(itemId);
@@ -133,13 +137,13 @@ public class ItemServiceImpl implements ItemService {
         log.debug("Найден пользователь: {}", author);
         List<Booking> booking = bookingRepository.findBookingByIdUserAndIdItem(authorId, itemId);
 
-//        if (commentDtoRequest.getText().isBlank()) {
-//            throw new CommentValidationException("Текст отзыва не может быть пустым!");
-//        }
-//
-//        if (booking.isEmpty()) {
-//            throw new CommentValidationException("Оставить отзыв может только тот кто брал ее в аренду!");
-//        }
+        if (commentDtoRequest.getText().isBlank()) {
+            throw new CommentValidationException("Текст отзыва не может быть пустым!");
+        }
+
+        if (booking.isEmpty()) {
+            throw new CommentValidationException("Оставить отзыв может только тот кто брал ее в аренду!");
+        }
 
         Comment comment = CommentMapper.mapToNewComment(commentDtoRequest, findItem, author);
         Comment saveComment = commentRepository.save(comment);
